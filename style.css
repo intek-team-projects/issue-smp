@@ -170,3 +170,35 @@ textarea::placeholder { color: var(--muted); }
   .hint { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* 이슈 ID 바로가기 */
+.iss {
+  display: inline; padding: 0 5px; margin: 0 1px; border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: 6px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: .92em;
+  font-variant-numeric: tabular-nums; cursor: pointer; line-height: 1.5; white-space: nowrap;
+}
+.iss:hover { background: color-mix(in srgb, var(--accent) 18%, var(--bg)); }
+
+/* 기다리는 동안 답변 자리 */
+.skeleton { display: grid; gap: 8px; margin-top: 10px; }
+.skeleton i { display: block; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--surface-2), var(--surface), var(--surface-2)); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+.skeleton i:nth-child(1) { width: 92%; } .skeleton i:nth-child(2) { width: 78%; } .skeleton i:nth-child(3) { width: 55%; }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.stopped { color: var(--muted); font-size: 14px; }
+
+/* 평가·조회 내역 */
+.rate.on { color: var(--accent); background: var(--accent-soft); }
+.meta-text { margin-left: 4px; }
+.fb-form { display: flex; gap: 6px; margin-top: 8px; max-width: 520px; }
+.fb-form input { flex: 1; height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); font: inherit; font-size: 13.5px; }
+.fb-form .ghost-btn { border: 1px solid var(--line); height: 34px; }
+
+/* 보내기 ↔ 중지 */
+.send.stop { background: var(--fg); color: var(--bg); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 110px; transform: translate(-50%, 8px); opacity: 0; pointer-events: none; z-index: 20;
+  padding: 8px 16px; border-radius: 999px; background: var(--fg); color: var(--bg); font-size: 13.5px; transition: opacity .2s, transform .2s;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.turn-bot { scroll-margin-top: 72px; }

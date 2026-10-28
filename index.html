@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SW 이슈 인사이트</title>
+<meta name="description" content="SMT AOI 검사장비 SW 이슈관리대장(합성 데이터) 질의응답 데모">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/spinner.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <span class="brand-name">SW 이슈 인사이트</span>
+    <span class="tag">Demo</span>
+  </div>
+  <button type="button" id="reset" class="icon-btn" title="새 대화" aria-label="새 대화" hidden>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+    <span>새 대화</span>
+  </button>
+</header>
+
+<main id="main">
+  <section id="welcome" class="welcome">
+    <h1>무엇이든 물어보세요</h1>
+    <p class="lead">SMT AOI 검사장비 SW 이슈 <strong>2,080건</strong>에서 비슷한 과거 사례와 해결 방법을 찾고,
+      건수·추이·원인을 정확히 집계해 근거 이슈 ID와 함께 답합니다.</p>
+    <div id="suggest" class="suggest" role="list"></div>
+    <p class="note">합성 데이터로 만든 데모입니다. 실제 고객·장비 정보가 아닙니다.</p>
+  </section>
+
+  <section id="thread" class="thread" aria-live="polite"></section>
+</main>
+
+<footer class="composer-wrap">
+  <form id="f" class="composer">
+    <label for="q" class="sr-only">질문</label>
+    <textarea id="q" rows="1" maxlength="500" placeholder="증상이나 궁금한 점을 입력하세요" autocomplete="off"></textarea>
+    <button type="submit" id="send" class="send" aria-label="보내기" disabled>
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </button>
+  </form>
+  <p class="hint">Enter 보내기 · Shift+Enter 줄바꿈 · 답변에 10~30초가 걸립니다</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

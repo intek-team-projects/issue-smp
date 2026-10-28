@@ -1,0 +1,12 @@
+{
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; font-src https://cdn.jsdelivr.net; img-src 'self' data:; connect-src https://issue.intekplus.dev; frame-ancestors 'none'; base-uri 'none'; form-action 'none'" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
+    }
+  ]
+}

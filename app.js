@@ -264,21 +264,34 @@ async function ask(text) {
   const body = addBot();
   const label = body.querySelector(".loading span");
   const t0 = Date.now();
-  const steps = ["이슈관리대장을 조회하고 있어요", "비슷한 사례와 원인을 정리하고 있어요", "근거를 확인하며 답변을 쓰고 있어요"];
+  const steps = ["이슈관리대장을 조회하고 있어요", "비슷한 사례와 원인을 정리하고 있어요", "같은 계열 이슈를 묶어 집계하고 있어요",
+    "지금 할 일을 우선순위로 정리하고 있어요", "근거를 확인하며 답변을 쓰고 있어요"];
   const timer = setInterval(() => {
     const s = Math.floor((Date.now() - t0) / 1000);
-    label.textContent = `${steps[Math.min(steps.length - 1, Math.floor(s / 8))]} · ${s}초`;
+    label.textContent = `${steps[Math.min(steps.length - 1, Math.floor(s / 10))]} · ${s}초`;
   }, 1000);
   controller = new AbortController();
   try {
-    const r = await fetch(`${BASE}/ask`, {
+    // 접수 후 결과 조회: 현장 문제 해결형 답은 1분 넘게 걸릴 수 있어(서버 앞단 100초 연결 제한) 접수만 하고 결과를 조회한다
+    const r = await fetch(`${BASE}/jobs`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: text, history: history() }),
       signal: controller.signal,
     });
-    const d = await r.json().catch(() => ({ error: "응답을 읽지 못했습니다. 잠시 후 다시 시도해 주세요." }));
-    if (!r.ok || d.error) throw new Error(d.error || `오류가 발생했습니다(${r.status}).`);
+    const j = await r.json().catch(() => ({ error: "응답을 읽지 못했습니다. 잠시 후 다시 시도해 주세요." }));
+    if (!r.ok || j.error) throw new Error(j.error || `오류가 발생했습니다(${r.status}).`);
+    let d;
+    for (;;) {
+      await new Promise((res, rej) => {
+        const t = setTimeout(res, 1500);
+        controller.signal.addEventListener("abort", () => { clearTimeout(t); rej(new DOMException("중지", "AbortError")); }, { once: true });
+      });
+      const p = await fetch(`${BASE}/jobs/${j.job_id}`, { signal: controller.signal });
+      d = await p.json().catch(() => ({ status: "running" }));
+      if (d.status !== "running") break;
+    }
+    if (d.status !== "done" || d.error) throw new Error(d.error || "오류가 발생했습니다.");
     const turn = { q: text, a: d.answer, seconds: d.seconds, tools: d.tools || [] };
     turns.push(turn);
     save();

@@ -115,6 +115,9 @@ function render(md) {
   // **굵게** 바로 뒤에 한글 조사가 붙으면(예: **설계오류(23건)**와) 마크다운 규칙상 굵게로 인식되지 않아 별표가 보인다
   // — 먼저 <strong> 으로 바꿔 둔다(마크다운 안의 HTML 은 그대로 통과하고, 아래에서 정화된다)
   md = md.replace(/\*\*(?=\S)([^*\n]+?)(?<=\S)\*\*/g, "<strong>$1</strong>");
+  // 범위 표기(1,930~2,381만원)의 물결표 두 개가 취소선으로 처리돼 사라졌다 — 문자 코드로 바꿔 그대로 보이게 한다
+  // (marked 12 는 백슬래시 이스케이프로는 막히지 않았다)
+  md = md.replace(/~/g, "&#126;");
   const holder = document.createElement("div");
   holder.className = "answer";
   holder.innerHTML = DOMPurify.sanitize(marked.parse(md));

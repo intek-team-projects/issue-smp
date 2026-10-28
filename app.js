@@ -73,7 +73,8 @@ function load() { try { return JSON.parse(localStorage.getItem(STORE) || "[]"); 
 // 답변 끝의 '이어서 볼 만한 질문' 목록을 떼어 버튼으로 보여 준다
 function splitFollowups(md) {
   const lines = md.split("\n");
-  const idx = lines.findIndex((l) => /(이어서|추천|다음으로|더 볼 만한|함께 볼 만한).{0,12}질문/.test(l));
+  // 스킬 v5 는 '이어서 물어보기' 제목을 쓴다('…질문'이 없다) — 둘 다 찾는다. '연관 이슈 추천' 표 제목은 걸리지 않게 한다
+  const idx = lines.findIndex((l) => /이어서 물어보기|(이어서|추천|다음으로|더 볼 만한|함께 볼 만한).{0,12}질문/.test(l));
   if (idx < 0) return { body: md, followups: [] };
   const followups = [];
   for (const l of lines.slice(idx + 1)) {

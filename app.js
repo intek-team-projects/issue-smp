@@ -39,6 +39,9 @@ function splitFollowups(md) {
 
 // 마크다운 → 정화된 HTML(공개 화면이라 반드시 정화), 표는 가로 스크롤 틀로 감싼다
 function render(md) {
+  // **굵게** 바로 뒤에 한글 조사가 붙으면(예: **설계오류(23건)**와) 마크다운 규칙상 굵게로 인식되지 않아 별표가 보인다
+  // — 먼저 <strong> 으로 바꿔 둔다(마크다운 안의 HTML 은 그대로 통과하고, 아래에서 정화된다)
+  md = md.replace(/\*\*(?=\S)([^*\n]+?)(?<=\S)\*\*/g, "<strong>$1</strong>");
   const holder = document.createElement("div");
   holder.innerHTML = DOMPurify.sanitize(marked.parse(md));
   holder.querySelectorAll("table").forEach((t) => {

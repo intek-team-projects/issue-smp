@@ -189,9 +189,17 @@ textarea::placeholder { color: var(--muted); }
 /* 평가·조회 내역 */
 .rate.on { color: var(--accent); background: var(--accent-soft); }
 .meta-text { margin-left: 4px; }
-.fb-form { display: flex; gap: 6px; margin-top: 8px; max-width: 520px; }
-.fb-form input { flex: 1; height: 34px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); font: inherit; font-size: 13.5px; }
+.fb-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; max-width: 560px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.fb-form input { height: 36px; padding: 0 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--fg); font: inherit; font-size: 13.5px; }
+.fb-form input.need { border-color: #e5484d; }
 .fb-form .ghost-btn { border: 1px solid var(--line); height: 34px; }
+.fb-cats { display: flex; flex-wrap: wrap; gap: 6px; }
+.fb-cat { height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--fg-2); cursor: pointer; font: inherit; font-size: 12.5px; }
+.fb-cat[aria-checked="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.fb-ask { font-size: 13.5px; font-weight: 600; color: var(--fg); }
+.fb-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.fb-apply { height: 34px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); cursor: pointer; font: inherit; font-size: 13px; font-weight: 600; }
+.fb-note { font-size: 12px; color: var(--muted); }
 
 /* 보내기 ↔ 중지 */
 .send.stop { background: var(--fg); color: var(--bg); }

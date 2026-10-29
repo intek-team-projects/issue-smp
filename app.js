@@ -200,11 +200,18 @@ function showAnswer(body, turn, scroll = true) {
   if (scroll) body.closest(".turn-bot").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-async function postFeedback(turn, rating, comment = "") {
+const FB_CATS = ["이슈를 잘못 찾음", "숫자·금액이 틀림", "할 일이 맞지 않음", "기타"];
+
+async function postFeedback(turn, rating, extra = {}) {
+  // 반영 요청이면 자동 확인·재현에 쓰도록 답 전문과 앞 질문(대화 맥락)까지 보낸다
+  const i = turns.indexOf(turn);
+  const context = i > 0 ? turns.slice(Math.max(0, i - 3), i).map((t) => t.q) : [];
   try {
     await fetch(`${BASE}/feedback`, {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: turn.q, answer: turn.a.slice(0, 300), rating, comment }),
+      body: JSON.stringify({ question: turn.q, answer: extra.apply ? turn.a.slice(0, 20000) : turn.a.slice(0, 300),
+                             rating, comment: extra.comment || "", category: extra.category || "",
+                             apply: !!extra.apply, context }),
     });
   } catch { /* 평가 전송 실패는 사용자 흐름을 막지 않는다 */ }
 }
@@ -216,14 +223,42 @@ function rate(body, turn, r) {
   save();
   body.querySelector(".fb-form")?.remove();
   if (r === "up") { postFeedback(turn, "up"); toast("의견 감사합니다"); return; }
+  // 👎: 무엇이 틀렸는지 받고, 답변 개선에 반영할지 되묻는다 — '반영 요청'만 자동 확인·검증을 거쳐 반영된다
   const form = document.createElement("form");
   form.className = "fb-form";
-  form.innerHTML = `<input type="text" maxlength="500" placeholder="어떤 점이 아쉬웠나요? (선택)" aria-label="아쉬운 점">
-    <button type="submit" class="ghost-btn">보내기</button>`;
+  form.innerHTML = `
+    <div class="fb-cats" role="radiogroup" aria-label="문제 종류">${FB_CATS.map((c, k) =>
+      `<button type="button" class="fb-cat" role="radio" aria-checked="${k === 3}" data-c="${esc(c)}">${esc(c)}</button>`).join("")}</div>
+    <input type="text" maxlength="500" placeholder="무엇이 틀렸나요? 예: ISS-1596 원인은 반사가 아니라 ROI입니다" aria-label="틀린 점">
+    <div class="fb-ask">이 내용을 답변 개선에 반영할까요?</div>
+    <div class="fb-actions">
+      <button type="submit" class="fb-apply" data-apply="1">반영 요청</button>
+      <button type="submit" class="ghost-btn" data-apply="0">기록만 남기기</button>
+    </div>
+    <div class="fb-note">반영 요청은 이슈 대장과 맞는지 확인하고, 다른 질문의 답이 나빠지지 않을 때만 반영됩니다. 대장 원본은 바뀌지 않습니다.</div>`;
   meta.after(form);
+  let cat = "기타";
+  form.querySelectorAll(".fb-cat").forEach((b) => {
+    b.onclick = () => {
+      cat = b.dataset.c;
+      form.querySelectorAll(".fb-cat").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
+    };
+  });
   const input = form.querySelector("input");
   input.focus();
-  form.onsubmit = (e) => { e.preventDefault(); postFeedback(turn, "down", input.value); form.remove(); toast("의견 감사합니다"); };
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    const apply = e.submitter?.dataset.apply === "1";
+    if (apply && !input.value.trim()) {
+      input.placeholder = "반영하려면 무엇이 틀렸는지 한 줄 적어 주세요";
+      input.classList.add("need");
+      input.focus();
+      return;
+    }
+    postFeedback(turn, "down", { comment: input.value, category: cat, apply });
+    form.remove();
+    toast(apply ? "반영 요청을 받았습니다. 확인 후 반영되면 다음 답부터 적용됩니다" : "의견 감사합니다");
+  };
 }
 
 let toastTimer;
